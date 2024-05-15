@@ -1,16 +1,35 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica para autenticar al usuario
-    // Por ahora, simplemente mostramos los datos en la consola
-    console.log("Email:", email);
-    console.log("Password:", password);
+    setError('');
+    try {
+      const response = await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/token', 
+        new URLSearchParams({
+          username,
+          password
+        }), 
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
+      const { access_token } = response.data;
+      localStorage.setItem('token', access_token);
+      navigate('/'); // Navegar a la página de inicio (home) después de iniciar sesión
+    } catch (err) {
+      setError('Usuario o contraseña inválidos');
+      console.error('Error al iniciar sesión:', err);
+    }
   };
 
   return (
@@ -21,22 +40,23 @@ const Login = () => {
             Iniciar sesión
           </h2>
         </div>
+        {error && <div className="text-red-500 text-center">{error}</div>}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">
-                Correo electrónico
+              <label htmlFor="username" className="sr-only">
+                Username
               </label>
               <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div>
@@ -68,10 +88,10 @@ const Login = () => {
         </form>
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            ¿No tienes una cuenta?{" "}
-            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Register
-            </Link>
+            ¿No tienes una cuenta?{' '}
+            <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Regístrate
+            </a>
           </p>
         </div>
       </div>
