@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { toast } from 'react-toastify'; // Importa toast de react-toastify
 
-const Login = () => {
+const Login = ({ handleLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,11 +14,12 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/token', 
+      const response = await axios.post(
+        'https://sa-e-commercecompany-1p24-eg5f.onrender.com/token',
         new URLSearchParams({
           username,
           password
-        }), 
+        }),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -25,7 +28,11 @@ const Login = () => {
       );
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
-      navigate('/'); // Navegar a la página de inicio (home) después de iniciar sesión
+      handleLogin(); // Invoca la función handleLogin pasada como prop
+      navigate('/home');
+
+      // Muestra una notificación de éxito
+      toast.success('Inicio de sesión exitoso!');
     } catch (err) {
       setError('Usuario o contraseña inválidos');
       console.error('Error al iniciar sesión:', err);
@@ -97,6 +104,10 @@ const Login = () => {
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  handleLogin: PropTypes.func.isRequired
 };
 
 export default Login;

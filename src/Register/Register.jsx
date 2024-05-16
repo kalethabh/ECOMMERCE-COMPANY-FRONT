@@ -1,18 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-const Registro = () => {
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
+const Register = () => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica para registrar al usuario
-    // Por ahora, simplemente mostramos los datos en la consola
-    console.log("Nombre:", nombre);
-    console.log("Email:", email);
-    console.log("Password:", password);
+    const formData = new URLSearchParams();
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("email", email);
+
+    try {
+      await axios.post("https://sa-e-commercecompany-1p24-eg5f.onrender.com/register/", formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      toast.success("Usuario registrado correctamente");
+    } catch (error) {
+      if (error.response) {
+        setErrorMessage(error.response.data.detail);
+      } else {
+        setErrorMessage("Error al registrar el usuario");
+      }
+    }
   };
 
   return (
@@ -26,19 +43,19 @@ const Registro = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="nombre" className="sr-only">
-                User
+              <label htmlFor="username" className="sr-only">
+                Nombre de usuario
               </label>
               <input
-                id="nombre"
-                name="nombre"
+                id="username"
+                name="username"
                 type="text"
-                autoComplete="nombre"
+                autoComplete="username"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="User"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div>
@@ -74,7 +91,11 @@ const Registro = () => {
               />
             </div>
           </div>
-
+          {errorMessage && (
+            <div className="mt-4 text-red-600 text-sm text-center">
+              {errorMessage}
+            </div>
+          )}
           <div>
             <button
               type="submit"
@@ -84,17 +105,9 @@ const Registro = () => {
             </button>
           </div>
         </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            ¿Ya tienes una cuenta?{" "}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Inicia sesión
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
 };
 
-export default Registro;
+export default Register;
