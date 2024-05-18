@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,6 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ const Register = () => {
         }
       });
       toast.success("Usuario registrado correctamente");
+      navigate('/');
     } catch (error) {
       if (error.response) {
         setErrorMessage(error.response.data.detail);
@@ -105,6 +108,14 @@ const Register = () => {
             </button>
           </div>
         </form>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            ¿Ya tienes una cuenta?{' '}
+            <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Login
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Verifica el estado de autenticación al cargar la aplicación
     const loggedInStatus = localStorage.getItem('isLoggedIn');
     if (loggedInStatus === 'true') {
       setIsLoggedIn(true);
@@ -23,30 +22,32 @@ function App() {
   }, []);
 
   const handleLogin = () => {
-    // Maneja el inicio de sesión y guarda el estado en localStorage
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true');
   };
 
   const handleLogout = () => {
-    // Maneja el cierre de sesión y elimina el estado del localStorage
     setIsLoggedIn(false);
     localStorage.removeItem('isLoggedIn');
   };
 
   return (
     <BrowserRouter>
-      {isLoggedIn && <Nav handleLogout={handleLogout} />}
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-      <Routes>
-        <Route path="/" element={<Login handleLogin={handleLogin} />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/products" element={<AllProducts />} />
-        <Route path="/customers" element={<AllCustomers />} />
-        <Route path="/orders" element={<AllOrders />} />
-      </Routes>
-      <Footer />
+      <div className="flex flex-col min-h-screen">
+        {isLoggedIn && <Nav handleLogout={handleLogout} />}
+        <main className="flex-grow">
+          <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+          <Routes>
+            <Route path="/" element={<Login handleLogin={handleLogin} />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/products" element={<AllProducts />} />
+            <Route path="/customers" element={<AllCustomers />} />
+            <Route path="/orders" element={<AllOrders />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </BrowserRouter>
   );
 }

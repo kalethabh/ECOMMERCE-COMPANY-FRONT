@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { toast } from 'react-toastify'; // Importa toast de react-toastify
+import { toast } from 'react-toastify';
 
 const Login = ({ handleLogin }) => {
   const [username, setUsername] = useState('');
@@ -28,10 +28,8 @@ const Login = ({ handleLogin }) => {
       );
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
-      handleLogin(); // Invoca la función handleLogin pasada como prop
+      handleLogin();
       navigate('/home');
-
-      // Muestra una notificación de éxito
       toast.success('Inicio de sesión exitoso!');
     } catch (err) {
       setError('Usuario o contraseña inválidos');
@@ -83,7 +81,6 @@ const Login = ({ handleLogin }) => {
               />
             </div>
           </div>
-
           <div>
             <button
               type="submit"
