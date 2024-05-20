@@ -30,7 +30,7 @@ const Login = ({ handleLogin }) => {
       localStorage.setItem('token', access_token);
       handleLogin();
       navigate('/home');
-      toast.success('Inicio de sesión exitoso!');
+      toast.success('¡Inicio de sesión exitoso!');
     } catch (err) {
       setError('Usuario o contraseña inválidos');
       console.error('Error al iniciar sesión:', err);
@@ -38,20 +38,16 @@ const Login = ({ handleLogin }) => {
   };
 
   return (
-    <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-lg rounded-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Iniciar sesión
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Iniciar sesión</h2>
         </div>
-        {error && <div className="text-red-500 text-center">{error}</div>}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="username" className="sr-only">
-                Username
-              </label>
+              <label htmlFor="username" className="sr-only">Usuario</label>
               <input
                 id="username"
                 name="username"
@@ -59,15 +55,13 @@ const Login = ({ handleLogin }) => {
                 autoComplete="username"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
+                placeholder="Ingresa tu usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Contraseña
-              </label>
+              <label htmlFor="password" className="sr-only">Contraseña</label>
               <input
                 id="password"
                 name="password"
@@ -75,7 +69,7 @@ const Login = ({ handleLogin }) => {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Contraseña"
+                placeholder="Ingresa tu contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -90,15 +84,11 @@ const Login = ({ handleLogin }) => {
             </button>
           </div>
         </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            ¿No tienes una cuenta?{' '}
-            <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Regístrate
-            </a>
-          </p>
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">¿No tienes una cuenta? <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">Regístrate aquí</a></p>
         </div>
       </div>
+      <footer className="text-gray-600 mt-8">© 2024 Todos los derechos reservados</footer>
     </div>
   );
 };

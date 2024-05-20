@@ -108,14 +108,15 @@ const Register = () => {
             </button>
           </div>
         </form>
-        <div className="text-center">
+        <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             ¿Ya tienes una cuenta?{' '}
             <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Login
+              Iniciar sesión
             </a>
           </p>
         </div>
+        <footer className="text-gray-600 mt-8 text-center">© 2024 Todos los derechos reservados</footer>
       </div>
     </div>
   );

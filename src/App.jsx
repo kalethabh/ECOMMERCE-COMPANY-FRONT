@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './Home/Home';
@@ -10,6 +10,10 @@ import Login from './Login/Login';
 import AllProducts from './Products/AllProducts';
 import AllCustomers from './Customers/AllCustomers';
 import AllOrders from './Orders/AllOrders';
+import CreateProduct from './CreateProduct/CreateProduct';
+import ProductDetail from './Products/ProductDetail';
+import CustomersForm from './CustomersForm/CustomersForm';
+import OrdersForm from './Order/OrderForm';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,7 +40,17 @@ function App() {
       <div className="flex flex-col min-h-screen">
         {isLoggedIn && <Nav handleLogout={handleLogout} />}
         <main className="flex-grow">
-          <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <Routes>
             <Route path="/" element={<Login handleLogin={handleLogin} />} />
             <Route path="/home" element={<Home />} />
@@ -44,9 +58,15 @@ function App() {
             <Route path="/products" element={<AllProducts />} />
             <Route path="/customers" element={<AllCustomers />} />
             <Route path="/orders" element={<AllOrders />} />
+            <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="/products/:productId" element={<ProductDetail />} />
+            <Route path="/payment" element={<CustomersForm />} />
+            <Route path="/order" element={<OrdersForm />} />
+
+            {!isLoggedIn && <Route path="*" element={<Navigate to="/" replace />} />}
           </Routes>
         </main>
-        <Footer />
+        {!window.location.pathname.includes("/register") && !window.location.pathname.includes("/login") && <Footer />}
       </div>
     </BrowserRouter>
   );
