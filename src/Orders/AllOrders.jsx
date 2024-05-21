@@ -35,13 +35,23 @@ const AllOrders = () => {
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-4">Todas las Órdenes</h1>
       {error && <div className="text-red-500">{error}</div>}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {orders.map(order => (
-          <div key={order.id} className="border p-4 rounded">
-            <h2 className="text-xl font-bold">Orden #{order.id}</h2>
-            <p>Cliente ID: {order.customer_id}</p>
-          </div>
-        ))}
+      <div className="overflow-x-auto">
+        <table className="table-auto border-collapse w-full">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">ID de Orden</th>
+              <th className="border px-4 py-2">ID de Cliente</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map(order => (
+              <tr key={order.id}>
+                <td className="border px-4 py-2">{order.id}</td>
+                <td className="border px-4 py-2">{order.customer_id}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

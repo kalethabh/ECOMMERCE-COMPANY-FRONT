@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
 
-const PaymentForm = ({ orderId, onSubmit }) => {
+const PaymentForm = ({ orderId, onSuccess, onError }) => {
   const [formData, setFormData] = useState({
     card_number: '',
     expiration_date: '',
     cvv: ''
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,9 +19,30 @@ const PaymentForm = ({ orderId, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setLoading(true);
+
+    try {
+      const response = await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/payments/', {
+        credit_card: {
+          card_number: formData.card_number,
+          expiration_date: formData.expiration_date,
+          cvv: formData.cvv
+        },
+        order_id: orderId
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      onSuccess(response.data);
+    } catch (error) {
+      onError(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,9 +80,17 @@ const PaymentForm = ({ orderId, onSubmit }) => {
           required
         />
       </div>
-      <button type="submit">Pagar</button>
+      <button type="submit" disabled={loading}>
+        {loading ? 'Procesando...' : 'Pagar'}
+      </button>
     </form>
   );
+};
+
+PaymentForm.propTypes = {
+  orderId: PropTypes.string.isRequired,
+  onSuccess: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
 };
 
 export default PaymentForm;
