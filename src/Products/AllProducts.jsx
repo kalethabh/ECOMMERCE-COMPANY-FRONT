@@ -13,11 +13,12 @@ const AllProducts = () => {
     const fetchProducts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://sa-e-commercecompany-1p24-eg5f.onrender.com/products', {
+        const response = await axios.get('https://sa-e-commercecompany-1p24-eg5f.onrender.com/products/', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
+        console.log(response.data); // Verifica qué datos están llegando
         setProducts(response.data);
       } catch (err) {
         setError('Error al obtener los productos');
@@ -62,11 +63,12 @@ const AllProducts = () => {
           {products.map(product => (
             <div key={product.id} className="border p-4 rounded shadow-md">
               <h2 className="text-xl font-bold mb-2">
-                <Link to={`/products/${product.id}`}>{product.name}</Link>
+                <Link to={`/products/${product.id}`}>{product.title}</Link>
               </h2>
               <p className="text-gray-700 mb-2">{product.description}</p>
               <p className="text-gray-800 font-bold">${product.price}</p>
               <p className="text-gray-500">Cantidad: {product.quantity}</p>
+              <p className="text-gray-500">Categoría: {product.category}</p>
               <div className="flex space-x-2 mt-2">
                 <button
                   className="bg-red-500 text-white px-3 py-1 rounded flex items-center hover:bg-red-600"
@@ -89,10 +91,11 @@ const AllProducts = () => {
           <thead>
             <tr>
               <th className="py-2 px-4 border-b">ID</th>
-              <th className="py-2 px-4 border-b">Nombre</th>
+              <th className="py-2 px-4 border-b">Título</th>
               <th className="py-2 px-4 border-b">Descripción</th>
               <th className="py-2 px-4 border-b">Precio</th>
               <th className="py-2 px-4 border-b">Cantidad</th>
+              <th className="py-2 px-4 border-b">Categoría</th>
               <th className="py-2 px-4 border-b">Acciones</th>
             </tr>
           </thead>
@@ -102,12 +105,13 @@ const AllProducts = () => {
                 <td className="py-2 px-4 border-b">{product.id}</td>
                 <td className="py-2 px-4 border-b">
                   <Link to={`/products/${product.id}`} className="text-blue-500 hover:underline">
-                    {product.name}
+                    {product.title}
                   </Link>
                 </td>
                 <td className="py-2 px-4 border-b">{product.description}</td>
                 <td className="py-2 px-4 border-b">${product.price}</td>
                 <td className="py-2 px-4 border-b">{product.quantity}</td>
+                <td className="py-2 px-4 border-b">{product.category}</td>
                 <td className="py-2 px-4 border-b flex space-x-2">
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded flex items-center hover:bg-red-600"

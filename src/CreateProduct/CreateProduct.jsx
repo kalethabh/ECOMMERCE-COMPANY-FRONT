@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const CreateProduct = () => {
-  useEffect(() => {
-    console.log('CreateProduct Component Mounted');
-  }, []);
-
   const navigate = useNavigate();
   const [product, setProduct] = useState({
-    name: '',
+    title: '',
     description: '',
     price: '',
-    quantity: ''
+    quantity: '',
+    category: '', // Agregado el campo de categoría
+    image: '' // Agregado el campo de imagen
   });
   const [error, setError] = useState('');
 
@@ -25,33 +23,17 @@ const CreateProduct = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/products', product, {
+      await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/products/', product, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       navigate('/products');
-      toast.success('Producto creado exitosamente', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success('Producto creado exitosamente');
     } catch (err) {
       setError('Error al crear el producto');
       console.error('Error creating product:', err);
-      toast.error('Error al crear el producto', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Error al crear el producto');
     }
   };
 
@@ -61,15 +43,15 @@ const CreateProduct = () => {
       {error && <div className="text-red-500 mb-4">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-            Nombre
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+            Título
           </label>
           <input
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="name"
+            id="title"
             type="text"
-            name="name"
-            value={product.name}
+            name="title"
+            value={product.title}
             onChange={handleChange}
             required
           />
@@ -111,6 +93,34 @@ const CreateProduct = () => {
             type="number"
             name="quantity"
             value={product.quantity}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+            Categoría
+          </label>
+          <input
+            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="category"
+            type="text"
+            name="category"
+            value={product.category}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+            Imagen (URL)
+          </label>
+          <input
+            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="image"
+            type="text"
+            name="image"
+            value={product.image}
             onChange={handleChange}
             required
           />

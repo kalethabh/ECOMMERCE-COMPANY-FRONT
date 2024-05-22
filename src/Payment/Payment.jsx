@@ -1,96 +1,126 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
-const PaymentForm = ({ orderId, onSuccess, onError }) => {
-  const [formData, setFormData] = useState({
+const Payment = () => {
+  const [creditCard, setCreditCard] = useState({
     card_number: '',
     expiration_date: '',
     cvv: ''
   });
+  const [orderId, setOrderId] = useState('');
+  const [token, setToken] = useState('');
 
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    } else {
+      toast.error('No estás autenticado. Por favor, inicia sesión.');
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      const response = await axios.post('https://sa-e-commercecompany-1p24-eg5f.onrender.com/payments/', {
-        credit_card: {
-          card_number: formData.card_number,
-          expiration_date: formData.expiration_date,
-          cvv: formData.cvv
+      const response = await axios.post(
+        'https://sa-e-commercecompany-1p24-eg5f.onrender.com/payments/',
+        {
+          order_id: orderId,
+          credit_card: creditCard
         },
-        order_id: orderId
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
-
-      onSuccess(response.data);
+      );
+      toast.success('Pago procesado exitosamente');
+      console.log('Pago procesado exitosamente:', response.data);
     } catch (error) {
-      onError(error);
-    } finally {
-      setLoading(false);
+      toast.error('Error al procesar el pago. Por favor, inténtalo de nuevo.');
+      console.error('Error al procesar el pago:', error);
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCreditCard({
+      ...creditCard,
+      [name]: value
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="card_number">Número de Tarjeta:</label>
-        <input
-          type="text"
-          id="card_number"
-          name="card_number"
-          value={formData.card_number}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="expiration_date">Fecha de Expiración:</label>
-        <input
-          type="text"
-          id="expiration_date"
-          name="expiration_date"
-          value={formData.expiration_date}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="cvv">CVV:</label>
-        <input
-          type="text"
-          id="cvv"
-          name="cvv"
-          value={formData.cvv}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit" disabled={loading}>
-        {loading ? 'Procesando...' : 'Pagar'}
-      </button>
-    </form>
+    <div className="max-w-md mx-auto mt-10">
+      <h2 className="text-2xl font-bold mb-6">Procesar Pago</h2>
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderId">
+            ID de la Orden:
+          </label>
+          <input
+            type="text"
+            id="orderId"
+            name="orderId"
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cardNumber">
+            Número de Tarjeta:
+          </label>
+          <input
+            type="text"
+            id="cardNumber"
+            name="card_number"
+            value={creditCard.card_number}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="expirationDate">
+            Fecha de Expiración:
+          </label>
+          <input
+            type="text"
+            id="expirationDate"
+            name="expiration_date"
+            value={creditCard.expiration_date}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cvv">
+            CVV:
+          </label>
+          <input
+            type="text"
+            id="cvv"
+            name="cvv"
+            value={creditCard.cvv}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Procesar Pago
+        </button>
+      </form>
+    </div>
   );
 };
 
-PaymentForm.propTypes = {
-  orderId: PropTypes.string.isRequired,
-  onSuccess: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-};
-
-export default PaymentForm;
+export default Payment;

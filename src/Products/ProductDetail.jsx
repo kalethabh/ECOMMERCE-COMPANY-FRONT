@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
+import CustomersForm from '../CustomersForm/CustomersForm'; 
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -8,6 +9,8 @@ const ProductDetail = () => {
   const [error, setError] = useState('');
   const [reviews, setReviews] = useState([]);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [showCustomerForm, setShowCustomerForm] = useState(false); // Estado para mostrar el formulario de cliente
+  const [customerId, setCustomerId] = useState(''); // Estado para almacenar el ID del cliente
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -60,59 +63,46 @@ const ProductDetail = () => {
     }
   }, [productId]);
 
-  if (!productId) {
-    return <div>No product ID provided</div>;
-  }
-
-  if (error) {
-    return <div>Error fetching product details: {error}</div>;
-  }
-
-  if (!product || !recommendedProducts) {
-    return <div>Loading...</div>;
-  }
+  const handleBuyClick = () => {
+    setShowCustomerForm(true); // Mostrar el formulario de cliente al hacer clic en "Comprar"
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Detalle del producto */}
       <div className="flex flex-col md:flex-row items-start justify-center md:justify-between">
         <div className="md:w-1/2">
-          <img src={product.image} alt={product.name} className="w-full h-auto md:max-w-md rounded-lg shadow-md border border-gray-200" />
+          <img src={product?.image} alt={product?.name} className="w-full h-auto md:max-w-md rounded-lg shadow-md border border-gray-200" />
         </div>
         <div className="md:w-1/2 md:pl-8">
-            <p className="text-lg ml-20">{product.id}</p>
-          <h1 className="text-3xl font-semibold mb-4">{product.name}</h1>
-          <p className="text-lg mb-4 text-gray-700">{product.description}</p>
-          <div className="mb-4">
-    
-          </div>
+          <h1 className="text-3xl font-semibold mb-4">{product?.name}</h1>
+          <p className="text-lg mb-4 text-gray-700">{product?.description}</p>
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">Precio:</p>
-            <p className="text-lg">${product.price}</p>
+            <p className="text-lg">${product?.price}</p>
           </div>
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">Disponibilidad:</p>
-            <p className="text-lg">{product.availability ? 'Disponible' : 'No disponible'}</p>
+            <p className="text-lg text-green-400 font-bold">Disponible</p>
           </div>
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">Envío:</p>
-            <p className="text-lg">{product.shipping || 'Envío gratuito'}</p>
+            <p className="text-lg">{product?.shipping || 'Envío gratuito'}</p>
           </div>
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">Ventas:</p>
-            <p className="text-lg">{product.sales || 72}</p>
+            <p className="text-lg">{product?.sales || 72}</p>
           </div>
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">Ubicación:</p>
-            <p className="text-lg">{product.location || 'Colom'}</p>
+            <p className="text-lg">{product?.location || 'Colom'}</p>
           </div>
           {/* Botón "Comprar" */}
-          <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
+          <button onClick={handleBuyClick} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
             Comprar
           </button>
         </div>
       </div>
-      
       {/* Sección de productos recomendados */}
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Productos Recomendados</h2>
@@ -150,6 +140,9 @@ const ProductDetail = () => {
           ))}
         </div>
       </div>
+
+      {/* Formulario de cliente */}
+      {showCustomerForm && <CustomersForm onClose={() => setShowCustomerForm(false)} />}
     </div>
   );
 };

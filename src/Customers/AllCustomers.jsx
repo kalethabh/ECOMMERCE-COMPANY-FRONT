@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import EditCustomer from './EditCustomers';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [error, setError] = useState('');
+  const [editCustomerId, setEditCustomerId] = useState(null);
 
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const token = localStorage.getItem('token'); // Asegúrate de tener el token almacenado
+        const token = localStorage.getItem('token');
         if (!token) {
           setError('Token no encontrado');
           return;
@@ -21,7 +22,6 @@ const Customers = () => {
           }
         });
 
-        console.log('Response data:', response.data); // Verificar los datos recibidos
         setCustomers(response.data);
       } catch (err) {
         setError('Error al obtener los clientes');
@@ -53,18 +53,18 @@ const Customers = () => {
     }
   };
 
-  const editCustomer = (id) => {
-    // Lógica para editar cliente
-    console.log(`Editar cliente con ID: ${id}`);
+  const handleEditCustomer = (customerId) => {
+    setEditCustomerId(customerId);
   };
 
   return (
-    <div className="container mx-auto">
+    <div>
       <h1 className="text-2xl font-bold mb-4">Lista de Clientes</h1>
       {error && <div className="text-red-500">{error}</div>}
       <table className="min-w-full bg-white">
         <thead>
           <tr>
+            <th className="py-2 px-4 border-b">ID</th>
             <th className="py-2 px-4 border-b">Nombre</th>
             <th className="py-2 px-4 border-b">Teléfono</th>
             <th className="py-2 px-4 border-b">Dirección</th>
@@ -74,31 +74,34 @@ const Customers = () => {
           </tr>
         </thead>
         <tbody>
-          {customers.map((customer, index) => (
-            <tr key={index}>
+          {customers.map((customer) => (
+            <tr key={customer.id}>
+              <td className="py-2 px-4 border-b">{customer.id}</td>
               <td className="py-2 px-4 border-b">{customer.name}</td>
-              <td className="py-2 px-4 border-b">{parseInt(customer.telefono)}</td> {/* Convertir a número */}
+              <td className="py-2 px-4 border-b">{parseInt(customer.telefono)}</td>
               <td className="py-2 px-4 border-b">{customer.direccion}</td>
               <td className="py-2 px-4 border-b">{customer.email}</td>
               <td className="py-2 px-4 border-b">{customer.identification_card}</td>
               <td className="py-2 px-4 border-b flex space-x-2">
-                <button 
+                <button
                   className="bg-red-500 text-white px-3 py-1 rounded flex items-center"
                   onClick={() => deleteCustomer(customer.id)}
                 >
-                  <FaTrash />
+                  Eliminar
                 </button>
-                <button 
+                <button
                   className="bg-blue-500 text-white px-3 py-1 rounded flex items-center"
-                  onClick={() => editCustomer(customer.id)}
+                  onClick={() => handleEditCustomer(customer.id)}
                 >
-                  <FaEdit />
+                  Editar
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {editCustomerId && <EditCustomer customerId={editCustomerId} />}
     </div>
   );
 };

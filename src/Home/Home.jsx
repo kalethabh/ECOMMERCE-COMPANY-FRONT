@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -20,8 +21,12 @@ const Home = () => {
         setProducts(response.data);
         setFilteredProducts(response.data);
       } catch (err) {
-        setError('Error al obtener los productos');
+        const errorMessage = err.response?.data?.message || 'Error al obtener los productos';
+        setError(errorMessage);
         console.error('Error fetching products:', err);
+        toast.error(errorMessage, {
+          position: toast.POSITION.TOP_RIGHT
+        });
       }
     };
 
@@ -36,10 +41,21 @@ const Home = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setFilteredProducts([response.data]);
+      if (response.data) {
+        setFilteredProducts([response.data]);
+      } else {
+        setError('Producto no encontrado');
+        toast.error('Producto no encontrado', {
+          position: toast.POSITION.TOP_RIGHT
+        });
+      }
     } catch (err) {
-      setError('Producto no encontrado');
+      const errorMessage = err.response?.data?.message || 'Error al buscar el producto';
+      setError(errorMessage);
       console.error('Error fetching product:', err);
+      toast.error(errorMessage, {
+        position: toast.POSITION.TOP_RIGHT
+      });
     }
   };
 
@@ -72,7 +88,6 @@ const Home = () => {
             <i className="fas fa-search"></i>
           </button>
         </div>
-        {error && <div className="text-red-500">{error}</div>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-8">
           {filteredProducts.map(product => (
             <div key={product.id} className="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
@@ -80,8 +95,9 @@ const Home = () => {
                 <img src={product.image} alt={product.name} className="w-[15em] h-56 object-cover rounded" />
               </Link>
               <Link to={`/products/${product.id}`} className="text-xl font-bold text-gray-900 hover:underline">
-                {product.name}
+                {product.title}
               </Link>
+              <p className="text-gray-700">${product.price}</p>
             </div>
           ))}
         </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import OrderForm from '../Order/OrderForm'; 
 
-const CustomersForm = () => {
+const CustomersForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
     telefono: '',
@@ -13,17 +13,31 @@ const CustomersForm = () => {
   });
 
   const [token, setToken] = useState('');
-  const [showPaymentForm, setShowPaymentForm] = useState(false); // Estado para controlar la visibilidad del formulario de pago
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const formRef = useRef(null); // Ref para el formulario
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
     } else {
-      // Manejo si no hay token almacenado
       toast.error('No estás autenticado. Por favor, inicia sesión.');
     }
-  }, []);
+
+    // Manejador de clics fuera del formulario
+    const handleClickOutside = (event) => {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        onClose(); // Llamar la función onClose para cerrar el formulario
+      }
+    };
+
+    // Agregar evento
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Limpiar evento
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,21 +66,20 @@ const CustomersForm = () => {
           }
         }
       );
-      toast.success('¡Cliente guardado exitosamente!');
+      toast.success('¡Datos guardados exitosamente!');
       console.log('Response:', response.data);
-      setShowPaymentForm(true); // Mostrar el formulario de pago después de crear el cliente
+      setShowPaymentForm(true);
     } catch (error) {
-      console.error('Error al crear cliente:', error);
-      toast.error('Error al crear cliente. Por favor, inténtalo de nuevo.');
+      console.error('Error al guardar los datos:', error);
+      toast.error('Error al guardar los datos. Por favor, inténtalo de nuevo.');
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      {/* Formulario de cliente */}
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       {!showPaymentForm && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 relative z-10">
-          <h2 className="text-2xl font-semibold mb-4">Crear Nuevo Cliente</h2>
+        <div ref={formRef} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 relative">
+          <h2 className="text-2xl font-semibold mb-4">Registra tus datos</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
@@ -144,10 +157,9 @@ const CustomersForm = () => {
           </form>
         </div>
       )}
-      {/* Formulario de pago (sobre el formulario de cliente) */}
       {showPaymentForm && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-          <h2 className="text-2xl font-semibold mb-4">Realizar Pago</h2>
+        <div ref={formRef} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 relative">
+          <h2 className="text-2xl font-semibold mb-4">Siguiente</h2>
           <OrderForm />
         </div>
       )}
