@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import OrderForm from '../Order/OrderForm'; 
+import OrderForm from '../Order/OrdersForm'; 
 
 const CustomersForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,8 @@ const CustomersForm = ({ onClose }) => {
 
   const [token, setToken] = useState('');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const formRef = useRef(null); // Ref para el formulario
+  const [customers, setCustomers] = useState([]);
+  const formRef = useRef(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -23,21 +24,25 @@ const CustomersForm = ({ onClose }) => {
     } else {
       toast.error('No estás autenticado. Por favor, inicia sesión.');
     }
+  }, []);
 
-    // Manejador de clics fuera del formulario
-    const handleClickOutside = (event) => {
-      if (formRef.current && !formRef.current.contains(event.target)) {
-        onClose(); // Llamar la función onClose para cerrar el formulario
-      }
-    };
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get('https://sa-e-commercecompany-1p24-eg5f.onrender.com/customers/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setCustomers(response.data);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      toast.error('Error al obtener la lista de clientes. Por favor, inténtalo de nuevo.');
+    }
+  };
 
-    // Agregar evento
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Limpiar evento
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
+  useEffect(() => {
+    fetchCustomers();
+  }, [token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +74,7 @@ const CustomersForm = ({ onClose }) => {
       toast.success('¡Datos guardados exitosamente!');
       console.log('Response:', response.data);
       setShowPaymentForm(true);
+      fetchCustomers();
     } catch (error) {
       console.error('Error al guardar los datos:', error);
       toast.error('Error al guardar los datos. Por favor, inténtalo de nuevo.');
@@ -81,7 +87,7 @@ const CustomersForm = ({ onClose }) => {
         <div ref={formRef} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 relative">
           <h2 className="text-2xl font-semibold mb-4">Registra tus datos</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+          <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
               <input
                 type="text"
@@ -153,13 +159,12 @@ const CustomersForm = ({ onClose }) => {
               >
                 Siguiente
               </button>
-            </div>
+            </div>    
           </form>
         </div>
       )}
       {showPaymentForm && (
         <div ref={formRef} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 relative">
-          <h2 className="text-2xl font-semibold mb-4">Siguiente</h2>
           <OrderForm />
         </div>
       )}

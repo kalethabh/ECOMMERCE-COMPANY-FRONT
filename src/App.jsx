@@ -13,9 +13,8 @@ import AllOrders from './Orders/AllOrders';
 import CreateProduct from './CreateProduct/CreateProduct';
 import ProductDetail from './Products/ProductDetail';
 import CustomersForm from './CustomersForm/CustomersForm';
-import OrdersForm from './Order/OrderForm';
 import Payment from './Payment/Payment'
-import OrderForm from './Order/OrderForm';
+import OrderForm from './Order/OrdersForm';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -63,7 +62,6 @@ function App() {
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/products/:productId" element={<ProductDetail />} />
             <Route path="/payment" element={<CustomersForm />} />
-            <Route path="/order" element={<OrdersForm />} />
             <Route path="/pay" element={<Payment />} />
             <Route path="/order" element={<OrderForm />} />
 

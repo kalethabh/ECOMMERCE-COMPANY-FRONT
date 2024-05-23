@@ -1,22 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
-const EditCustomers = ({ onClose, customerId }) => {
-  const [formData, setFormData] = useState({
+const EditCustomers = ({ customerId, onCancelEdit }) => {
+  const [customer, setCustomer] = useState({
     name: '',
-    telefono: '',
-    direccion: '',
+    Telefono: '',
+    Direccion: '',
     email: '',
-    identification_card: ''
-    // Agrega aquí otros atributos del cliente que desees actualizar
-  });
-
-  const formRef = useRef(null); // Ref para el formulario
+    Identification_card: ''
+  });  
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Lógica para obtener los datos del cliente a editar y establecerlos en el estado local `formData`
-    const fetchCustomerData = async () => {
+    const fetchCustomer = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`https://sa-e-commercecompany-1p24-eg5f.onrender.com/customers/${customerId}`, {
@@ -24,96 +20,129 @@ const EditCustomers = ({ onClose, customerId }) => {
             Authorization: `Bearer ${token}`
           }
         });
-        setFormData(response.data);
-      } catch (error) {
-        console.error('Error fetching customer data:', error);
+        setCustomer(response.data);
+      } catch (err) {
+        setError('Error al obtener el cliente');
+        console.error('Error fetching customer:', err);
       }
     };
 
-    fetchCustomerData();
+    fetchCustomer();
   }, [customerId]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `https://sa-e-commercecompany-1p24-eg5f.onrender.com/customers/${customerId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      toast.success('¡Cliente actualizado exitosamente!');
-      onClose();
-    } catch (error) {
-      console.error('Error updating customer:', error);
-      toast.error('Error al actualizar el cliente. Por favor, inténtalo de nuevo.');
+      await axios.put(`https://sa-e-commercecompany-1p24-eg5f.onrender.com/customers/${customerId}`, {
+        name: customer.name,
+        Telefono: customer.telefono,
+        Direccion: customer.direccion,
+        email: customer.email,
+        Identification_card: customer.identification_card
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      });
+      onCancelEdit();
+    } catch (err) {
+      setError('Error al actualizar el cliente');
+      console.error('Error updating customer:', err);
     }
   };
 
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer(prevCustomer => ({
+      ...prevCustomer,
+      [name]: value
+    }));
+  };
+
+  if (!customer) {
+    return <div>Cargando...</div>;
+  }
+
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Editar Cliente</h2>
-      <form ref={formRef} onSubmit={handleSubmit}>
-        <label htmlFor="name" className="block mb-2">Nombre:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="border border-gray-300 rounded px-2 py-1 mb-2"
-        />
-        <label htmlFor="telefono" className="block mb-2">Teléfono:</label>
-        <input
-          type="text"
-          id="telefono"
-          name="telefono"
-          value={formData.telefono}
-          onChange={handleChange}
-          className="border border-gray-300 rounded px-2 py-1 mb-2"
-        />
-        <label htmlFor="direccion" className="block mb-2">Dirección:</label>
-        <input
-          type="text"
-          id="direccion"
-          name="direccion"
-          value={formData.direccion}
-          onChange={handleChange}
-          className="border border-gray-300 rounded px-2 py-1 mb-2"
-        />
-        <label htmlFor="email" className="block mb-2">Correo Electrónico:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border border-gray-300 rounded px-2 py-1 mb-2"
-        />
-        <label htmlFor="identification_card" className="block mb-2">Cédula de Identificación:</label>
-        <input
-          type="text"
-          id="identification_card"
-          name="identification_card"
-          value={formData.identification_card}
-          onChange={handleChange}
-          className="border border-gray-300 rounded px-2 py-1 mb-2"
-        />
-        {/* Agrega aquí otros campos de formulario para los atributos adicionales del cliente */}
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar cambios</button>
-      </form>
+    <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+      <div className="bg-white p-8 rounded-lg w-96 relative z-10">
+        <h2 className="text-xl font-bold mb-2">Editar Cliente</h2>
+        {error && <div className="text-red-500">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Nombre</label>
+            <input
+              type="text"
+              name="name"
+              value={customer.name}
+              onChange={handleChange}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Teléfono</label>
+            <input
+              type="text"
+              name="telefono"
+              value={customer.telefono}
+              onChange={handleChange}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Dirección</label>
+            <input
+              type="text"
+              name="direccion"
+              value={customer.direccion}
+              onChange={handleChange}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={customer.email}
+              onChange={handleChange}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Cédula de Identidad</label>
+            <input
+              type="text"
+              name="identification_card"
+              value={customer.identification_card}
+              onChange={handleChange}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div className="flex space-x-2">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Actualizar Cliente
+            </button>
+            <button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              onClick={onCancelEdit}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

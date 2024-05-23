@@ -57,6 +57,10 @@ const Customers = () => {
     setEditCustomerId(customerId);
   };
 
+  const handleCancelEdit = () => {
+    setEditCustomerId(null);
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Lista de Clientes</h1>
@@ -101,7 +105,7 @@ const Customers = () => {
         </tbody>
       </table>
 
-      {editCustomerId && <EditCustomer customerId={editCustomerId} />}
+      {editCustomerId && <EditCustomer customerId={editCustomerId} onCancelEdit={handleCancelEdit} />}
     </div>
   );
 };
