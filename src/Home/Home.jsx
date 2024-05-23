@@ -73,7 +73,7 @@ const Home = () => {
     <div className="flex flex-col items-center h-auto min-h-screen bg-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
-          Welcome to ECOMMERCE COMPANY
+          Bienvenido a ECOMMERCE COMPANY
         </h1>
         <div className="mb-4 flex">
           <input

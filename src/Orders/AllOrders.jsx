@@ -42,7 +42,7 @@ const Orders = () => {
             <th className="py-2 px-4 border-b">Email del Cliente</th>
             <th className="py-2 px-4 border-b">Teléfono del Cliente</th>
             <th className="py-2 px-4 border-b">Dirección del Cliente</th>
-            <th className="py-2 px-4 border-b">Productos</th>
+            <th className="py-2 px-4 border-b">Productos - Cantidad</th>
           </tr>
         </thead>
         <tbody>
